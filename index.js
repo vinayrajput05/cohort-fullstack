@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import express from "express";
 import cors from 'cors';
+import cookieParser from 'cookie-parser'
 import dbConnect from './utils/db.js';
 
 // Routes
@@ -12,7 +13,8 @@ const port = process.env.PORT || 4000;
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use(cors({
     'origin': 'http://127.0.0.1:3000',

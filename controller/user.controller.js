@@ -115,12 +115,31 @@ const login = async (req, res) => {
             return;
         }
 
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '2 days' })
+        if (user.isVerified) {
+            res.status(401).json({ 'message': 'Please verify your account' })
+            return;
+        }
 
-        res.send({
-            "message": 'Login successfully',
-            token,
-            user
+        const token = jwt.sign({ id: user._id, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: '2 days' }
+        )
+
+        const cookieOptions = {
+            httpOnly: true,
+            secure: true,
+            maxAge: 24 * 60 * 60 * 1000
+        }
+        res.cookie('token', token, cookieOptions)
+
+        res.status(200).json({
+            status: true,
+            message: 'Login successful',
+            user: {
+                id: user._id,
+                name: user.name,
+                role: user.role
+            }
         })
 
     } catch (error) {
